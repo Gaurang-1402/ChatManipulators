@@ -60,11 +60,12 @@ class ManipulatorController(Node):
 
     def random(self):
         time_interval = 0.1/100
-
-        # Iterate 100 times
-        for _ in range(1000):
+        start_time = time.time()
+        self.joint_states.position = [random.uniform(-6.0, 6.0), random.uniform(-6.0, 6.0), random.uniform(-2.99, 2.99), random.uniform(-6.0, 6.0), random.uniform(-6.0, 6.0), random.uniform(-6.0, 6.0)]
+    
+        # Iterate until 5 seconds have passed
+        while time.time() - start_time < 5.0:
             # Set the joint positions to center
-            self.joint_states.position = [1.2, 3.5, 2.1, 5.6, 5.6, 5.6]
 
             # Update the timestamp
             now = time.time()
@@ -75,6 +76,8 @@ class ManipulatorController(Node):
             self.joint_state_publisher.publish(self.joint_states)
 
             # Sleep for the calculated time interval
+            time.sleep(time_interval)
+
 
 
 

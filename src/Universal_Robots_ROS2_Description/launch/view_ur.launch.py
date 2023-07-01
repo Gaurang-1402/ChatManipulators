@@ -151,18 +151,11 @@ def generate_launch_description():
         output="log",
         arguments=["-d", rviz_config_file],
     )
-    gazebo_spawn_robot = Node(
-        package="gazebo_ros",
-        executable="spawn_entity.py",
-        name="spawn_ur",
-        arguments=["-entity", "ur", "-topic", "robot_description", "-package_to_model"],
-        output="screen",
-    )
+
     nodes_to_start = [
         joint_state_publisher_node,
         robot_state_publisher_node,
         rviz_node,
-        gazebo_spawn_robot
     ]
 
     return LaunchDescription(declared_arguments + nodes_to_start)
