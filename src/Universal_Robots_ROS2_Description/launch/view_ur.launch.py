@@ -42,11 +42,10 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "ur_type",
             description="Type/series of used UR robot.",
-            choices=["ur3", "ur3e", "ur5", "ur5e", "ur10", "ur10e", "ur16e"],
+            choices=["ur5"],
         )
     )
-    # TODO(anyone): enable this when added into ROS2-foxy
-    # choices=['ur3', 'ur3e', 'ur5', 'ur5e', 'ur10', 'ur10e', 'ur16e']))
+
     declared_arguments.append(
         DeclareLaunchArgument(
             "safety_limits",
@@ -152,11 +151,18 @@ def generate_launch_description():
         output="log",
         arguments=["-d", rviz_config_file],
     )
-
+    gazebo_spawn_robot = Node(
+        package="gazebo_ros",
+        executable="spawn_entity.py",
+        name="spawn_ur",
+        arguments=["-entity", "ur", "-topic", "robot_description", "-package_to_model"],
+        output="screen",
+    )
     nodes_to_start = [
         joint_state_publisher_node,
         robot_state_publisher_node,
         rviz_node,
+        gazebo_spawn_robot
     ]
 
     return LaunchDescription(declared_arguments + nodes_to_start)

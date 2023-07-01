@@ -27,7 +27,6 @@ setup(
             'rosgpt = rosgpt.rosgpt:main',
             'rosgptparser_manipulator = rosgpt.rosgptparser_manipulator:main',
             'rosgpt_client_node = rosgpt.rosgpt_client_node:main',
-
         ],
     },
 )

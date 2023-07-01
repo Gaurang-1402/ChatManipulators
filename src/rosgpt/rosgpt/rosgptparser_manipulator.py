@@ -4,101 +4,106 @@ from std_msgs.msg import String
 import json
 import copy
 import math
-import rclpy 
-from rclpy.node import Node
-from geometry_msgs.msg import Twist, Vector3
-
-
-# Now, twist_msg.linear.x is x, twist_msg.linear.y is y, twist_msg.linear.z is z
-from geometry_msgs.msg import Pose
+from sensor_msgs.msg import JointState
 import time
 from rclpy.executors import SingleThreadedExecutor
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
-from std_msgs.msg import Empty
+import random
 
-
-
-class DroneController(Node):
+class ManipulatorController(Node):
 
     def __init__(self):
-        super().__init__('drone_controller')
+        super().__init__('manipulator_controller')
         self.create_subscription(String,'/voice_cmd',self.voice_cmd_callback,10)
-        self.velocity_publisher = self.create_publisher(Twist, '/drone/cmd_vel', 10)
-        self.pose_subscriber = self.create_subscription(Pose, "/drone/gt_pose", self.pose_callback, 10)
-        self.x = 0.0
-        self.y  = 0.0
-        self.theta  = 0.0
-        self.pose = Pose()
+        self.joint_state_publisher = self.create_publisher(JointState, '/joint_states', 10)
+        self.joint_state_subscriber = self.create_subscription(JointState, "/joint_states", self.joint_state_callback, 10)
         
-        self.takeoff_publisher = self.create_publisher(Empty, '/drone/takeoff', 10)
-        self.land_publisher = self.create_publisher(Empty, '/drone/land', 10)
+        self.joint_states = JointState()
+        self.joint_states.name = ["shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint", 
+                                  "wrist_1_joint", "wrist_2_joint", "wrist_3_joint"]
+        self.joint_states.position = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
         self.thread_executor = ThreadPoolExecutor(max_workers=1)
-
         self.move_executor = SingleThreadedExecutor()
+
         move_thread = threading.Thread(target=self.move_executor.spin)
         move_thread.start()
-        print('ROSGPT Drone Controller Started. Waiting for input commands ...')
+
+        print('ROSGPT Manipulator Controller Started. Waiting for input commands ...')
     
-    def pose_callback(self, msg):
-        self.x = msg.position.x
-        self.y = msg.position.y
-        self.z = msg.position.z
-        self.theta = msg.orientation
-        self.pose = msg
+    def joint_state_callback(self, msg):
+        self.joint_states = msg
 
-    def takeoff(self):
-        takeoff_msg = Empty()
-        self.takeoff_publisher.publish(takeoff_msg)
+    def center(self):
+        # Calculate the time interval between each message
+        time_interval = 0.1 
 
-    def land(self):
-        land_msg = Empty()
-        self.land_publisher.publish(land_msg)
+        # Iterate 100 times
+        for _ in range(100):
+            # Set the joint positions to center
+            self.joint_states.position = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0] 
+
+            # Update the timestamp
+            now = time.time()
+            self.joint_states.header.stamp.sec = int(now)
+            self.joint_states.header.stamp.nanosec = int((now - int(now)) * 1e9)
+
+            # Publish the joint states
+            self.joint_state_publisher.publish(self.joint_states)
+
+            # Sleep for the calculated time interval
+            time.sleep(time_interval)
 
 
-    #this callback represents the ROSGPTParser. It takes a JSON, parses it, and converts it to a ROS 2 command
+
+    def random(self):
+        time_interval = 0.1/100
+
+        # Iterate 100 times
+        for _ in range(1000):
+            # Set the joint positions to center
+            self.joint_states.position = [1.2, 3.5, 2.1, 5.6, 5.6, 5.6]
+
+            # Update the timestamp
+            now = time.time()
+            self.joint_states.header.stamp.sec = int(now)
+            self.joint_states.header.stamp.nanosec = int((now - int(now)) * 1e9)
+
+            # Publish the joint states
+            self.joint_state_publisher.publish(self.joint_states)
+
+            # Sleep for the calculated time interval
+
+
+
     def voice_cmd_callback(self, msg):
-        #print(msg.data)
         try:
             cmd = json.loads(msg.data)
-            cmd = json.loads(cmd['json']) #we only consider the pure json message. cmd['text'] contains a mix of text and json
+            cmd = json.loads(cmd['json']) 
             print('JSON command received: \n',cmd,'\n')
 
-            if cmd['action'] == 'takeoff':
-                print("Takeoff functionality")
-                self.thread_executor.submit(self.takeoff)
+            if cmd['action'] == 'center':
+                self.thread_executor.submit(self.center)
 
-            elif cmd['action'] == 'land':
-                self.thread_executor.submit(self.land)
+            elif cmd['action'] == 'random':
+                self.thread_executor.submit(self.random)
 
-            elif cmd['action'] == 'move':
-                linear_speed = cmd['params'].get('linear_speed', 0.2)
-                distance = cmd['params'].get('distance', 1.0)
-                direction = cmd['params'].get('direction', "forward")
+            elif cmd['action'] == 'move_joint':
+                joint = cmd['params'].get('joint', None)
+                angle = cmd['params'].get('angle', None)
+                joint_velocity = cmd['params'].get('speed', None)
 
-                print(f'linear_speed: {linear_speed}, distance: {distance}, direction: {direction}')
-                
-                # METHOD: Create a thread executor
-                # we need to run the method on a different thread to avoid blocking rclpy.spin. 
-                self.thread_executor.submit(self.move, linear_speed, distance, direction)
+                if joint is not None and angle is not None:
+                    print(f'joint: {joint}, angle: {angle}')
+                    self.thread_executor.submit(self.move_joint, joint, angle)
 
-                # running move on the main thread will generate to error, as it will block rclpy.spin
-                # self.move(linear_speed, distance, direction)
-
-            elif cmd['action'] == 'rotate':
-                print("Rotate functionality TODO")
-                pass
-                # angular_velocity = cmd['params'].get('angular_velocity', 1.0)
-                # angle = cmd['params'].get('angle', 90.0)
-                # is_clockwise = cmd['params'].get('is_clockwise', True)
-                # self.thread_executor.submit(self.rotate, angular_velocity, angle, is_clockwise)
-                #self.rotate(angular_velocity, angle, is_clockwise)
         except json.JSONDecodeError:
             print('[json.JSONDecodeError] Invalid or empty JSON string received:', msg.data)
         except Exception as e:
-            print('[Exception] An unexpected error occurred:', str(e))   
+            print('[Exception] An unexpected error occurred:', str(e))
+    
 
 
     def get_distance(self, start, destination):
@@ -108,118 +113,40 @@ class DroneController(Node):
             ((destination.position.z - start.position.z) ** 2)
         )
 
-    def move(self, linear_speed, distance, direction): 
-        print(f'Start moving the drone {direction} at {linear_speed} m/s for a distance of {distance} meters')
-
-        if abs(linear_speed) > 1.0:
-            print('[ERROR]: The speed in any direction must be lower than 1.0!')
+    def move_joint(self, joint, angle):
+        print(f'Start moving the joint {joint} to the angle {angle} radians')
+        
+        # Validate joint
+        if joint not in self.joint_states.name:
+            print('[ERROR]: Invalid joint name!')
             return -1
         
-        
-        linear_vector = Vector3()
+        # Validate angle
+        if joint == "elbow_joint" and (angle < -2.99 or angle > 2.99):
+            print('[ERROR]: Angle out of range for elbow_joint!')
+            return -1
+        elif (angle < -6.13 or angle > 6.13):
+            print('[ERROR]: Angle out of range!')
+            return -1
 
-        try: 
-            if direction == "forward":
-                linear_vector.x = linear_speed
-                linear_vector.y = 0.0
-                linear_vector.z = 0.0
-
-            elif direction == "backward":
-                linear_vector.x = -linear_speed
-                linear_vector.y = 0.0
-                linear_vector.z = 0.0
-            elif direction == "left":
-                linear_vector.x = 0.0
-                linear_vector.y = linear_speed
-                linear_vector.z = 0.0
-            elif direction == "right":
-                linear_vector.x = 0.0
-                linear_vector.y = -linear_speed
-                linear_vector.z = 0.0
-            elif direction == "up":
-                linear_vector.x = 0.0
-                linear_vector.y = 0.0
-                linear_vector.z = linear_speed
-            elif direction == "down":
-                linear_vector.x = 0.0
-                linear_vector.y = 0.0
-                linear_vector.z = -linear_speed
-
-        except Exception as e:
-            print('[Exception] An unexpected error occurred:', str(e))
-
-        twist_msg = Twist()
-        twist_msg.linear = linear_vector
+        # Find the index of the joint
+        joint_index = self.joint_states.name.index(joint)
 
         try:
-            start_pose = copy.copy(self.pose)
+            # Set the joint to the desired angle
+            self.joint_states.position[joint_index] = angle
 
-            print('start_pose: ', start_pose)
-            print('current_pose: ', self.pose)
-            while self.get_distance(start_pose, self.pose) < distance:
+            # Publish the joint_states
+            self.joint_state_publisher.publish(self.joint_states)
 
-                print('distance moved: ', self.get_distance(start_pose, self.pose))
-
-                self.velocity_publisher.publish(twist_msg)
-                self.move_executor.spin_once(timeout_sec=0.5)
+            print(f'Joint {joint} moved to {angle} radians')
         except Exception as e:
-
             print('[Exception] An unexpected error occurred:', str(e))
-
-        twist_msg.linear.x = 0.0
-        twist_msg.linear.y = 0.0
-        twist_msg.linear.z = 0.0
-
-        print("Stopping the drone ...")
-
-        self.velocity_publisher.publish(twist_msg)
-
-        # print('distance moved: ', self.get_distance(start_pose, self.pose))
-        print('The Robot has stopped...')
-
-
-
-
-    # def rotate (self, angular_speed_degree, desired_relative_angle_degree, clockwise):
-    #     print('Start Rotating the Robot ...')
-    #     #rclpy.spin_once(self)
-    #     twist_msg=Twist()
-    #     angular_speed_degree=abs(angular_speed_degree) #make sure it is a positive relative angle
-    #     if (angular_speed_degree>30) :
-    #         print (angular_speed_degree)
-    #         print('[ERROR]: The rotation speed must be lower than 0.5!')
-    #         return -1
-        
-    #     angular_speed_radians = math.radians(angular_speed_degree)
-    #     twist_msg.angular.z = -abs(angular_speed_radians) if clockwise else abs(angular_speed_radians)
-    #     twist_msg.angular.z = abs(angular_speed_radians) * (-1 if clockwise else 1)
-
-    #     start_pose = copy.copy(self.pose)
-        
-    #     #rclpy.spin_once(self)
-
-    #     rotated_related_angle_degree=0.0
-
-    #     while rotated_related_angle_degree<desired_relative_angle_degree:
-    #         #rclpy.spin_once(self)
-    #         self.velocity_publisher.publish(twist_msg)
-    #         #print ('rotated_related_angle_degree', rotated_related_angle_degree, 'desired_relative_angle_degree', desired_relative_angle_degree)
-    #         rotated_related_angle_degree = math.degrees(abs(start_pose.theta - self.pose.theta))
-    #         #rclpy.spin_once(self)
-            
-    #         #rclpy.spin_once(self)
-    #         time.sleep(0.01)
-    #     #print ('rotated_related_angle_degree', rotated_related_angle_degree, 'desired_relative_angle_degree', desired_relative_angle_degree)
-    #     twist_msg.angular.z = 0.0
-    #     self.velocity_publisher.publish(twist_msg)
-    #     print('The Robot has stopped...')
-
-        #return 0
 
     
 def main(args=None):
     rclpy.init(args=args)
-    node = DroneController()
+    node = ManipulatorController()
     rclpy.spin(node)
     rclpy.shutdown()
 

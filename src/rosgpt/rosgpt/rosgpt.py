@@ -153,40 +153,36 @@ class ROSGPTProxy(Resource):
         """
         # Create the GPT-3 prompt with example inputs and desired outputs
         prompt = '''Consider the following ontology:
-                    {"action": "land", "params": {}}
-                    {"action": "takeoff", "params": {}}
-                    {"action": "move", "params": {"linear_speed": linear_speed, "distance": distance, "direction": direction}}
+            {"action": "center", "params": {}}
+            {"action": "random", "params": {}}
+            {"action": "move_joint", "params": {"joint": joint, "angle": angle, "speed": speed}}
 
-                    The 'direction' parameter can take values "forward", "backward", "left", "right", "up", "down" to indicate the direction of movement. Here are some examples.
-                    
-                    if speed is not given in the prompt, it is assumed to be 0.5 meters per second.
-                    all numerical answers should be in float form
-                    prompt: "Move forward for 1 meter at a speed of 0.5 meters per second."
-                    returns: {"action": "move", "params": {"linear_speed": 0.5, "distance": 1, "direction": "forward"}}
+            The 'joint' parameter can take values "shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", "wrist_3_joint" to indicate the joint to move. The 'angle' parameter represents the target angle for the joint in radians, and 'speed' is the speed at which to move the joint in radians per second. The 'angle' value must be between -6.13 and 6.13 for all joints except 'elbow_joint', which must be between -2.99 and 2.99. Here are some examples.
 
-                    prompt: "Move backward for 2 meters at a speed of 0.7 meters per second."
-                    returns: {"action": "move", "params": {"linear_speed": 0.7, "distance": 2, "direction": "backward"}}
+            If speed is not given in the prompt, it is assumed to be 0.5 radians per second.
+            All numerical answers should be in float form.
 
-                    prompt: "Move left for 3 meters at a speed of 0.6 meters per second."
-                    returns: {"action": "move", "params": {"linear_speed": 0.6, "distance": 3, "direction": "left"}}
+            All joint values are between -6.13 to 6.13
+            except elbow_joint which has joint values between -2.99 to 2.99 
 
-                    prompt: "Move right for 4 meters at a speed of 0.5 meters per second."
-                    returns: {"action": "move", "params": {"linear_speed": 0.5, "distance": 4, "direction": "right"}}
+            prompt: "Move the shoulder_pan_joint to angle 0.7 radians at a speed of 0.2 radians per second."
+            returns: {"action": "move_joint", "params": {"joint": "shoulder_pan_joint", "angle": 0.7, "speed": 0.2}}
 
-                    prompt: "Move up for 1 meter at a speed of 0.3 meters per second."
-                    returns: {"action": "move", "params": {"linear_speed": 0.3, "distance": 1, "direction": "up"}}
+            prompt: "Move the elbow_joint to angle 1.3 radians."
+            returns: {"action": "move_joint", "params": {"joint": "elbow_joint", "angle": 1.3, "speed": 0.5}}
 
-                    prompt: "Move down for 2 meters at a speed of 0.4 meters per second."
-                    returns: {"action": "move", "params": {"linear_speed": 0.4, "distance": 2, "direction": "down"}}
+            prompt: "Move the wrist_1_joint to angle 2.2 radians at a speed of 0.3 radians per second."
+            returns: {"action": "move_joint", "params": {"joint": "wrist_1_joint", "angle": 2.2, "speed": 0.3}}
 
-                    prompt: "Take off."
-                    returns: {"action": "takeoff", "params": {}}
+            prompt: "Move the robot to the center position."
+            returns: {"action": "center", "params": {}}
 
-                    prompt: "Land."
-                    returns: {"action": "land", "params": {}}
+            prompt: "Move the robot to a random joint configuration."
+            returns: {"action": "random", "params": {}}
 
-                    You will be given human language prompts, and you need to return a JSON conformant to the ontology. Any action not in the ontology must be ignored.
-                    '''
+            You will be given human language prompts, and you need to return a JSON conformant to the ontology. Any action not in the ontology must be ignored.
+            '''
+
 
         prompt = prompt+'\nprompt: '+text_command
         #print(prompt) #for testing
@@ -194,7 +190,7 @@ class ROSGPTProxy(Resource):
 
         # Create the message structure for the GPT-3 model
         messages = [
-            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "system", "content": "You are a robot brain that translates human natural language to robot control commands in json."},
             {"role": "user", "content": prompt}
         ]
 
