@@ -37,13 +37,14 @@ class ManipulatorController(Node):
         self.joint_states = msg
 
     def center(self):
-        # Calculate the time interval between each message
-        time_interval = 0.1 
 
-        # Iterate 100 times
-        for _ in range(100):
+        time_interval = 0.1/100
+        start_time = time.time()
+        self.joint_states.position = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0] 
+    
+        # Iterate until 5 seconds have passed
+        while time.time() - start_time < 5.0:
             # Set the joint positions to center
-            self.joint_states.position = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0] 
 
             # Update the timestamp
             now = time.time()
@@ -55,6 +56,7 @@ class ManipulatorController(Node):
 
             # Sleep for the calculated time interval
             time.sleep(time_interval)
+
 
 
 
@@ -139,8 +141,24 @@ class ManipulatorController(Node):
             # Set the joint to the desired angle
             self.joint_states.position[joint_index] = angle
 
-            # Publish the joint_states
-            self.joint_state_publisher.publish(self.joint_states)
+            time_interval = 0.1/100
+            start_time = time.time()
+            self.joint_states.position = [random.uniform(-6.0, 6.0), random.uniform(-6.0, 6.0), random.uniform(-2.99, 2.99), random.uniform(-6.0, 6.0), random.uniform(-6.0, 6.0), random.uniform(-6.0, 6.0)]
+        
+            # Iterate until 5 seconds have passed
+            while time.time() - start_time < 5.0:
+                # Set the joint positions to center
+
+                # Update the timestamp
+                now = time.time()
+                self.joint_states.header.stamp.sec = int(now)
+                self.joint_states.header.stamp.nanosec = int((now - int(now)) * 1e9)
+
+                # Publish the joint states
+                self.joint_state_publisher.publish(self.joint_states)
+
+                # Sleep for the calculated time interval
+                time.sleep(time_interval)
 
             print(f'Joint {joint} moved to {angle} radians')
         except Exception as e:
