@@ -26,8 +26,27 @@ position:
 effort: []"
 
 ```
+
+Useful ones
+
 ```
 ros2 launch panda_description view.launch.py 
 
 ```
 
+
+
+Useless ones
+
+```
+ros2 launch panda_moveit_config move_group.launch.py 
+
+```
+
+```
+ros2 launch panda_description view_gz.launch.py
+```
+
+```
+ros2 launch panda_description view_ign.launch.py
+```
