@@ -81,8 +81,6 @@ class ManipulatorController(Node):
             time.sleep(time_interval)
 
 
-
-
     def voice_cmd_callback(self, msg):
         try:
             cmd = json.loads(msg.data)

@@ -250,8 +250,8 @@ class ROSGPTProxy(Resource):
 
 @app.route('/')
 def index():
-    print(os.path.join(get_package_share_directory('sjtu_drone_bringup'), 'webapp'))
-    return send_from_directory(os.path.join(get_package_share_directory('sjtu_drone_bringup'), 'webapp'), 'index.html')
+    print(os.path.join(get_package_share_directory('rosgpt'), 'webapp'))
+    return send_from_directory(os.path.join(get_package_share_directory('rosgpt'), 'webapp'), 'index.html')
 
 
 def main():
