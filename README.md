@@ -34,6 +34,10 @@ ros2 launch panda_description view.launch.py
 
 ```
 
+```
+ros2 topic echo /joint_group_effort_controller/joint_trajectory 
+
+```
 
 
 Useless ones
