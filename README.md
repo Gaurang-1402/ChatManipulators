@@ -1,5 +1,8 @@
 # ChatManipulators
 
+
+## Panda robot
+
 ```
 ros2 topic pub /joint_states sensor_msgs/msg/JointState "header:
   stamp:
@@ -20,5 +23,11 @@ position:
 - 3.32
 - 2.23
 - 1.56
-effort: []"]
+effort: []"
+
 ```
+```
+ros2 launch panda_description view.launch.py 
+
+```
+
