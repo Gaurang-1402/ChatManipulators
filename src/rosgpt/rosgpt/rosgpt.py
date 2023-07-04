@@ -55,28 +55,6 @@ tts_engine = pyttsx3.init()
 tts_lock = threading.Lock()
 
 
-def speak(text):
-    """
-    This function uses the Text-to-Speech (TTS) engine to speak the given text.
-
-    It is an optional method that can be used if you want the system to audibly
-    communicate the text messages.
-
-    Args:
-        text (str): The text to be spoken by the TTS engine.
-
-    Note:
-        This method is optional and can be used when audible communication of text
-        messages is desired. If not needed, it can be omitted from the implementation.
-    """
-    # Acquire the TTS lock to ensure exclusive access to the TTS engine
-    with tts_lock:
-        # Instruct the TTS engine to say the given text
-        tts_engine.say(text)
-
-        # Block and wait for the TTS engine to finish speaking
-        tts_engine.runAndWait()
-
 
 
 class ROSGPTNode(Node):
@@ -152,36 +130,51 @@ class ROSGPTProxy(Resource):
             str: The response from the GPT-3 model as a JSON string.
         """
         # Create the GPT-3 prompt with example inputs and desired outputs
-        prompt = '''Consider the following ontology:
-            {"action": "center", "params": {}}
-            {"action": "random", "params": {}}
-            {"action": "move_joint", "params": {"joint": joint, "angle": angle, "speed": speed}}
+        prompt = '''
+        Consider the following ontology:
+        {"action": "center", "params": {}}
+        {"action": "random", "params": {}}
+        {"action": "move_joint", "params": {"joint": joint, "angle": angle, "speed": speed}}
 
-            The 'joint' parameter can take values "shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", "wrist_3_joint" to indicate the joint to move. The 'angle' parameter represents the target angle for the joint in radians, and 'speed' is the speed at which to move the joint in radians per second. The 'angle' value must be between -6.13 and 6.13 for all joints except 'elbow_joint', which must be between -2.99 and 2.99. Here are some examples.
+        The 'joint' parameter can take values "shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", "wrist_3_joint" to indicate the joint to move. The 'angle' parameter represents the target angle for the joint in radians, and 'speed' is the speed at which to move the joint in radians per second. The 'angle' value must be between -6.13 and 6.13 for all joints except 'elbow_joint', which must be between -2.99 and 2.99. Here are some examples.
 
-            If speed is not given in the prompt, it is assumed to be 0.5 radians per second.
-            All numerical answers should be in float form.
+        If speed is not given in the prompt, it is assumed to be 0.5 radians per second.
+        All numerical answers should be in float form.
 
-            All joint values are between -6.13 to 6.13
-            except elbow_joint which has joint values between -2.99 to 2.99 
+        All joint values are between -6.13 to 6.13
+        except elbow_joint which has joint values between -2.99 to 2.99 
 
-            prompt: "Move the shoulder_pan_joint to angle 0.7 radians at a speed of 0.2 radians per second."
-            returns: {"action": "move_joint", "params": {"joint": "shoulder_pan_joint", "angle": 0.7, "speed": 0.2}}
+        Prompt: "Move the shoulder_pan_joint to angle 0.7 radians at a speed of 0.2 radians per second."
+        Returns: {"action": "move_joint", "params": {"joint": "shoulder_pan_joint", "angle": 0.7, "speed": 0.2}}
 
-            prompt: "Move the elbow_joint to angle 1.3 radians."
-            returns: {"action": "move_joint", "params": {"joint": "elbow_joint", "angle": 1.3, "speed": 0.5}}
+        Prompt: "Move the elbow_joint to angle 1.3 radians."
+        Returns: {"action": "move_joint", "params": {"joint": "elbow_joint", "angle": 1.3, "speed": 0.5}}
 
-            prompt: "Move the wrist_1_joint to angle 2.2 radians at a speed of 0.3 radians per second."
-            returns: {"action": "move_joint", "params": {"joint": "wrist_1_joint", "angle": 2.2, "speed": 0.3}}
+        Prompt: "Move the wrist_1_joint to angle 2.2 radians at a speed of 0.3 radians per second."
+        Returns: {"action": "move_joint", "params": {"joint": "wrist_1_joint", "angle": 2.2, "speed": 0.3}}
 
-            prompt: "Move the robot to the center position."
-            returns: {"action": "center", "params": {}}
+        Prompt: "Move the robot to the center position."
+        Returns: {"action": "center", "params": {}}
 
-            prompt: "Move the robot to a random joint configuration."
-            returns: {"action": "random", "params": {}}
+        Prompt: "Move the robot to a random joint configuration."
+        Returns: {"action": "random", "params": {}}
 
-            You will be given human language prompts, and you need to return a JSON conformant to the ontology. Any action not in the ontology must be ignored.
-            '''
+        You will be given human language prompts, and you need to return a JSON conformant to the ontology. Any action not in the ontology must be ignored.
+
+        Examples in other languages:
+
+        German:
+        Prompt: "Bewegen Sie das shoulder_pan_joint auf einen Winkel von 0,7 Radiant mit einer Geschwindigkeit von 0,2 Radiant pro Sekunde."
+        Returns: {"action": "move_joint", "params": {"joint": "shoulder_pan_joint", "angle": 0.7, "speed": 0.2}}
+
+        Japanese:
+        Prompt: "Elbow_joint o 1.3 radian ni ido sase, speed wa 0.5 radian per second desu."
+        Returns: {"action": "move_joint", "params": {"joint": "elbow_joint", "angle": 1.3, "speed": 0.5}}
+
+        Hindi:
+        Prompt: "Wrist_1_joint ko 2.2 radians par le jao, speed 0.3 radians per second ke saath."
+        Returns: {"action": "move_joint", "params": {"joint": "wrist_1_joint", "angle": 2.2, "speed": 0.3}}
+        '''
 
 
         prompt = prompt+'\nprompt: '+text_command
@@ -233,12 +226,10 @@ class ROSGPTProxy(Resource):
         print ('[ROSGPT] Command received. ', text_command, '. Asking ChatGPT ...')
         # Run the speak function on a separate thread
         #print('text_command:', text_command,'\n')
-        threading.Thread(target=speak, args=(text_command+"Message received. Now consulting ChatGPT for a response.",)).start()
         chatgpt_response = self.askGPT(text_command)
         print ('[ROSGPT] Response received from ChatGPT. \n', str(json.loads(chatgpt_response))[:60], '...')
         #print('eval(chatgpt_response)', eval(chatgpt_response))
         # Run the speak function on a separate thread
-        threading.Thread(target=speak, args=("We have received a response from ChatGPT.",)).start()
 
         if chatgpt_response is None:
             return {'error': 'An error occurred while processing the request'}

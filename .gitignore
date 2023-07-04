@@ -341,3 +341,9 @@ doc/
 
 ## Setting files
 *.settings
+
+log/
+
+install/
+
+build/
