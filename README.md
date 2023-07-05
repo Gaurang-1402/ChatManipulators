@@ -74,14 +74,14 @@ ros2 run rosgpt rosgpt_client_node
 
 ```
 source install/setup.sh
-ros2 run rosgpt rosgptparser_drone 
+ros2 run rosgpt rosgptparser_manipulator
 ```
 
 ## Running the simulation
 
 ```
 source install/setup.sh
-ros2 launch ur_description view_ur.launch.py ur_type:=ur5e
+ros2 launch ur_description view_ur.launch.py ur_type:=ur5
 
 ```
 
