@@ -4,9 +4,15 @@ ChatManipulators showcases the power of Language Logic Models (LLMs) by allowing
 
 Key features include:
 - A user-friendly web application providing an interactive interface for robot manipulator control
+
 - Commands to randomize or bring the robot arm to equilibrium
+[![manipulator-2.gif](https://i.postimg.cc/fTYJyr5W/manipulator-2.gif)](https://postimg.cc/cr4s5TVP)
 - Complete control over the manipulator's joints, allowing 5 DoF (Degrees of Freedom) commands for "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", and "wrist_3_joint"
+[![manipulator-1.gif](https://i.postimg.cc/mkzBvtp2/manipulator-1.gif)](https://postimg.cc/BP0rDQGd)
+
+
 - Support for commands in multiple languages
+  [![manipulator-3.gif](https://i.postimg.cc/zBLfrtVr/manipulator-3.gif)](https://postimg.cc/S2h4LG6T)
 
 
 ## ROSGPT Architecture
