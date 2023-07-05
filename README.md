@@ -7,15 +7,15 @@ Key features include:
 
 - Commands to randomize or bring the robot arm to equilibrium
 
-[![output-onlinegiftools.gif](https://i.postimg.cc/6qHmw0Sd/output-onlinegiftools.gif)](https://postimg.cc/0Kwf0p9Q)
+[![output-onlinegiftools-4-1.gif](https://i.postimg.cc/NGkV1WYC/output-onlinegiftools-4-1.gif)](https://postimg.cc/MXXdw3n1)
 
 - Complete control over the manipulator's joints, allowing 5 DoF (Degrees of Freedom) commands for "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", and "wrist_3_joint"
 
-[![output-onlinegiftools-2.gif](https://i.postimg.cc/bNrznFzf/output-onlinegiftools-2.gif)](https://postimg.cc/LndKKDYx)
+[![output-onlinegiftools-5-1.gif](https://i.postimg.cc/3wQCfxFX/output-onlinegiftools-5-1.gif)](https://postimg.cc/gx4Znd5j)
 
 - Support for commands in multiple languages
 
-[![output-onlinegiftools-2.gif](https://i.postimg.cc/bNrznFzf/output-onlinegiftools-2.gif)](https://postimg.cc/LndKKDYx)
+[![output-onlinegiftools-6-1.gif](https://i.postimg.cc/Ssvn5ZbB/output-onlinegiftools-6-1.gif)](https://postimg.cc/DJ1f4PZ6)
 
 ## ROSGPT Architecture
 
