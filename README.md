@@ -1,6 +1,6 @@
 # ChatManipulators: Control Manipulators with Natural Language
 
-ChatManipulators showcases the power of Language Logic Models (LLMs) by allowing users to control drones using simple, natural language instructions. The system currently operates within a simulated environment for testing and development purposes.
+ChatManipulators showcases the power of Language Logic Models (LLMs) by allowing users to control manipulators using simple, natural language instructions. The system currently operates within a simulated environment for testing and development purposes.
 
 Key features include:
 - A user-friendly web application providing an interactive interface for robot manipulator control
