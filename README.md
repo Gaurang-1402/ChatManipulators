@@ -6,14 +6,16 @@ Key features include:
 - A user-friendly web application providing an interactive interface for robot manipulator control
 
 - Commands to randomize or bring the robot arm to equilibrium
-[![manipulator-2.gif](https://i.postimg.cc/fTYJyr5W/manipulator-2.gif)](https://postimg.cc/cr4s5TVP)
-- Complete control over the manipulator's joints, allowing 5 DoF (Degrees of Freedom) commands for "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", and "wrist_3_joint"
-[![manipulator-1.gif](https://i.postimg.cc/mkzBvtp2/manipulator-1.gif)](https://postimg.cc/BP0rDQGd)
 
+[![output-onlinegiftools.gif](https://i.postimg.cc/6qHmw0Sd/output-onlinegiftools.gif)](https://postimg.cc/0Kwf0p9Q)
+
+- Complete control over the manipulator's joints, allowing 5 DoF (Degrees of Freedom) commands for "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", and "wrist_3_joint"
+
+[![output-onlinegiftools-2.gif](https://i.postimg.cc/bNrznFzf/output-onlinegiftools-2.gif)](https://postimg.cc/LndKKDYx)
 
 - Support for commands in multiple languages
-  [![manipulator-3.gif](https://i.postimg.cc/zBLfrtVr/manipulator-3.gif)](https://postimg.cc/S2h4LG6T)
 
+[![output-onlinegiftools-2.gif](https://i.postimg.cc/bNrznFzf/output-onlinegiftools-2.gif)](https://postimg.cc/LndKKDYx)
 
 ## ROSGPT Architecture
 
