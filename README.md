@@ -1,6 +1,6 @@
 # ChatManipulators: Control Manipulators with Natural Language
 
-ChatManipulators is a project that merges the capabilities of Language Logic Models (LLMs) with the control of robotic manipulators. With it, users can **command manipulators using simple, everyday language.** The project uses the ROS2 (Robot Operating System) Humble and runs simulations in the Gazebo environment, providing a reliable platform for manipulator arm behavior.
+ChatManipulators is a project that merges the capabilities of Language Logic Models (LLMs) with the control of robotic manipulators. With it, users can **command manipulators using simple, everyday language.** The project uses the ROS2 (Robot Operating System) Humble, providing a reliable platform for manipulator arm behavior.
 
 ChatManipulators is complemented by a user-friendly web application, offering a streamlined interface for inputting commands. This combination of sophisticated technology with a user-centric interface enhances the overall usability, making the control of complex robotic manipulators as straightforward as possible.
 
