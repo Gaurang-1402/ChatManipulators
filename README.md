@@ -16,7 +16,7 @@ Key features include:
 
 - Complete control over the manipulator's joints, allowing 5 DoF (Degrees of Freedom) commands for "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", and "wrist_3_joint"
 
-[![output-onlinegiftools-6-1.gif](https://i.postimg.cc/Ssvn5ZbB/output-onlinegiftools-6-1.gif)](https://postimg.cc/DJ1f4PZ6)
+[![output-onlinegiftools-20.gif](https://i.postimg.cc/k47GMKKd/output-onlinegiftools-20.gif)](https://postimg.cc/06HPc6Vt)
 
 - Support for commands in multiple languages
 
